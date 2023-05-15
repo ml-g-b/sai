@@ -163,8 +163,8 @@ void pave(int x1, int y1, int z1, int x2, int y2, int z2){
 void sol(){
     colorGlut(0.698,0.745,0.710);
     double t=T*WALL_SIZE;
-    double x1=-t;
-    double y1=-t;
+    double x1=-2*t;
+    double y1=-2*t;
     double s=3*t;
     double z=-10;
     glBegin(GL_QUADS);
@@ -299,18 +299,32 @@ void vClavier(unsigned char key, int x, int y){
     }
 }
 
-int intersection(double xp, double yp, intervalle x, intervalle y){
-    return 0;
+int intersection(double x, double s, intervalle a){
+    int bool=estDans(x-s,a) || estDans(x+s,a);
+    free(a);
+    /* printf("%d -- %f %f\n,",bool,x,s); */
+    return bool;
 }
 
 int deplacement_possible(unsigned int dir){
     int possibilite=0; // si possible de se deplacer renvoyer 0 sinon autre chose
     double vx, vy; // coordonnes du vecteur
-    double blockX, blockY; // coordonnees du block cible
     sens(perso, dir, &vx, &vy);
     double x=vx+perso->x;
     double y=vy+perso->y;
-    //possibilite=intersection(x, y, Intervalle(a,b), Intervalle(a,b)) && intersection;
+    double z=perso->z;
+    int blockI=(int)x, blockJ=(int)y; // coordonnees du block cible
+    int blockZ=labyrinthe->matrice[blockI*labyrinthe->larg+blockJ];
+    x*=WALL_SIZE;
+    y*=WALL_SIZE;
+    //printf("(%f,%f,%f):%f --> (%f,%f,%f):%f\n",x,y,z,PERSO_SIZE,blockI,blockJ,blockZ,WALL_SIZE);
+    int intersectionX=intersection(x,PERSO_SIZE/2,Intervalle(blockI*WALL_SIZE,blockI*(1+WALL_SIZE)));
+    int intersectionY=intersection(y,PERSO_SIZE/2,Intervalle(blockJ*WALL_SIZE,blockJ*(1+WALL_SIZE)));
+    int intersectionZ=intersection(z,PERSO_HEIGHT,Intervalle(blockZ,WALL_HEIGHT));
+    possibilite=intersectionX && intersectionY && intersectionZ;
+    /* printf("[%d ; %d] -- [%d ; %d] -- [%d ; %d]\n",blockI*WALL_SIZE, blockI*(WALL_SIZE+1),blockJ*WALL_SIZE, blockJ*(WALL_SIZE+1),blockZ,blockZ*WALL_HEIGHT); */
+
+    /* printf("{%d ; %d ; %d}\n",intersectionX,intersectionY,intersectionZ); */
     //printf("PERSO : %f %f\n",perso->x, perso->y);
     
     return possibilite;

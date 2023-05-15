@@ -27,7 +27,7 @@
 
 #define EX 1
 #define EY 2
-#define EZ 0
+#define EZ 2
 
 // Taille plan projection
 
@@ -40,6 +40,7 @@
 // Taille Personnage
 
 #define PERSO_SIZE 10
+#define PERSO_HEIGHT 0
 #define DISTANCE 10
 
 #define GLUT_KEY_SPACE 32

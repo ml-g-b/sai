@@ -2,6 +2,7 @@
 #include<math.h>
 #include<stdlib.h>
 #include"geometry.h"
+#include"../MACRO_function.h"
 
 vecteur Vecteur(double x, double y, double pas){
     vecteur v=(vecteur)malloc(sizeof(vecteur_struct));
@@ -118,4 +119,15 @@ personnage changerVecteur(vecteur v, personnage p){
 void freePersonnage(personnage p){
     free(p->v);
     free(p);
+}
+
+intervalle Intervalle(double a, double b){
+    intervalle I=(intervalle)malloc(sizeof(intervalle_struct));
+    I->min=F_MIN(a,b);
+    I->max=F_MAX(a,b);
+    return I;
+}
+
+int estDans(double e, intervalle I){
+    return (e>=I->min) && (e<=I->max);
 }
