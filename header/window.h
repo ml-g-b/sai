@@ -17,6 +17,12 @@
 #define WIDTH 10
 #define HEIGHT 10
 
+// Sol du labyrinthe
+
+#define NUMBER_OF_SQUARE 2 // Nombre de carrés dans 1 colonne 
+#define FLOOR_SPACE 1
+#define FLOOR_COLOR COLOR_GREY_SHADE(0.5);
+
 // Point de vue
 
 #define EX 1

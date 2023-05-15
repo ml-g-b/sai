@@ -80,41 +80,52 @@ void randomColor(){
 
 void longcube(double a, double c, double b, double s, double height){
     glBegin(GL_QUADS);
-    colorGlut(0,1,0);
+    COLOR_GREY_SHADE(0.2);
     glVertex3f(a+s,b+height,c);
     glVertex3f(a,b+height,c);
     glVertex3f(a,b+height,c+s);
     glVertex3f(a+s,b+height,c+s);
 
-    colorGlut(0,0,1);
-    glVertex3f(a+s,b,c+s);
-    glVertex3f(a,b,c+s);
-    glVertex3f(a,b,c);
-    glVertex3f(a+s,b,c);
-
-    colorGlut(1,0,0);
+    COLOR_GREY_SHADE(0.5);
     glVertex3f(a+s,b+height,c+s);
     glVertex3f(a,b+height,c+s);
     glVertex3f(a,b,c+s);
     glVertex3f(a+s,b,c+s);
 
-    colorGlut(1,1,0);
     glVertex3f(a+s,b,c);
     glVertex3f(a,b,c);
     glVertex3f(a,b+height,c);
     glVertex3f(a+s,b+height,c);
 
-    colorGlut(0,1,1);
     glVertex3f(a,b+height,c+s);
     glVertex3f(a,b+height,c);
     glVertex3f(a,b,c);
     glVertex3f(a,b,c+s);
 
-    colorGlut(1,0,1);
     glVertex3f(a+s,b+height,c);
     glVertex3f(a+s,b+height,c+s);
     glVertex3f(a+s,b,c+s);
     glVertex3f(a+s,b,c);
+    glEnd();
+
+    glBegin(GL_LINES);
+
+    glLineWidth(0.5);
+    
+    COLOR_BLACK;
+    
+    glVertex3f(a,b,c+s);
+    glVertex3f(a,b+height,c+s);
+
+    glVertex3f(a+s,b,c+s);
+    glVertex3f(a+s,b+height,c+s);
+
+    glVertex3f(a,b,c);
+    glVertex3f(a,b+height,c);
+
+    glVertex3f(a+s,b,c);
+    glVertex3f(a+s,b+height,c);
+    
     glEnd();
 }
 
@@ -149,6 +160,21 @@ void pave(int x1, int y1, int z1, int x2, int y2, int z2){
     glEnd();
 }
 
+void sol(){
+    colorGlut(0.698,0.745,0.710);
+    double t=T*WALL_SIZE;
+    double x1=-t;
+    double y1=-t;
+    double s=3*t;
+    double z=-10;
+    glBegin(GL_QUADS);
+    glVertex3f(x1,z,y1);
+    glVertex3f(x1,z,y1+s);
+    glVertex3f(x1+s,z,y1+s);
+    glVertex3f(x1+s,z,y1);
+    glEnd();
+}
+
 void carre(double x1, double y1, double x2, double y2){
     glBegin(GL_QUADS);
     glVertex3f(x1,0,y1);
@@ -156,6 +182,47 @@ void carre(double x1, double y1, double x2, double y2){
     glVertex3f(x2,0,y2);
     glVertex3f(x2,0,y1);
     glEnd();
+}
+
+void dalle(double x1, double y1, double x2, double y2){
+    int i, j;
+    double s=(x2-x1)/(double)NUMBER_OF_SQUARE-2*FLOOR_SPACE;
+    double coordX[NUMBER_OF_SQUARE];
+    double coordY[NUMBER_OF_SQUARE];
+    for(i=0 ; i<NUMBER_OF_SQUARE ; i++){
+        coordX[i]=(2*i+1)*FLOOR_SPACE + i*s;
+        coordY[i]=(2*i+1)*FLOOR_SPACE + i*s;
+    }
+    FLOOR_COLOR;
+    for(i=0 ; i<NUMBER_OF_SQUARE ; i++){
+        for(j=0 ; j<NUMBER_OF_SQUARE ; j++){
+            double x=x1+coordX[i];
+            double y=y1+coordY[j];
+            carre(x,y,x+s,y+s);
+        }
+    }   
+}
+
+void damier(double x1, double y1, double x2, double y2){
+    int i,j;
+    double s=(x2-x1)/(double)NUMBER_OF_SQUARE;
+    double coordX[NUMBER_OF_SQUARE];
+    double coordY[NUMBER_OF_SQUARE];
+    for(i=0 ; i<NUMBER_OF_SQUARE ; i++){
+        coordX[i]=i*s;
+        coordY[i]=i*s;
+    }
+    for(i=0 ; i<NUMBER_OF_SQUARE ; i++){
+        for(j=0 ; j<NUMBER_OF_SQUARE ; j++){
+            double x=x1+coordX[i];
+            double y=y1+coordY[j];
+            if((i+j)%2==0)
+                COLOR_BLACK;
+            else
+                COLOR_WHITE;
+            carre(x,y,x+s,y+s);
+        }
+    }
 }
 
 void labyrinthe2d(Tlaby *t, int x, int y, int z){
@@ -183,8 +250,10 @@ void labyrinthe2d(Tlaby *t, int x, int y, int z){
                 t->matrice[i*w+j]=VIDE;
             }
             else {            // Chemin (pas un mur)
-                COLOR_WHITE;
-                carre(x1,y1,x2,y2);
+                //COLOR_WHITE;
+                //carre(x1,y1,x2,y2);
+                //dalle(x1,y1,x2,y2);
+                damier(x1,y1,x2,y2);
             }
         }
     }
@@ -231,7 +300,7 @@ void vClavier(unsigned char key, int x, int y){
 }
 
 int intersection(double xp, double yp, intervalle x, intervalle y){
-    
+    return 0;
 }
 
 int deplacement_possible(unsigned int dir){
@@ -241,8 +310,8 @@ int deplacement_possible(unsigned int dir){
     sens(perso, dir, &vx, &vy);
     double x=vx+perso->x;
     double y=vy+perso->y;
-    possibilite=intersection(x, y, Intervalle(a,b), Intervalle(a,b)) && intersection;
-    printf("PERSO : %f %f\n",perso->x, perso->y);
+    //possibilite=intersection(x, y, Intervalle(a,b), Intervalle(a,b)) && intersection;
+    //printf("PERSO : %f %f\n",perso->x, perso->y);
     
     return possibilite;
 }
@@ -341,6 +410,7 @@ void affichage(){
     pnj();
     labyrinthe2d(labyrinthe, 0, 0, 0);
     repere();
+    sol();
     iteration++;
     glutSwapBuffers();
 }
