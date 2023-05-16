@@ -30,7 +30,7 @@
 #define TAILLE 250
 
 personnage perso;
-int const coefficient_de_rotation =8;
+int const coefficient_de_rotation =50;
 double rotation=M_PI/(double)coefficient_de_rotation;
 
 double pj_x=EX, pj_y=EY, pj_z=EZ+1;
@@ -445,7 +445,7 @@ void affichage(){
     
     x=perso->x*WALL_SIZE;
     y=perso->y*WALL_SIZE;
-    a=-PERSO_SIZE*cos(perso->teta+PI2);
+    a=PERSO_SIZE*cos(perso->teta+PI2)-1;
     b=PERSO_SIZE*sin(perso->teta+PI2)/2-1;
     gluLookAt(x-a, perso->z, y-b,
               x+a, perso->z, y+b,
