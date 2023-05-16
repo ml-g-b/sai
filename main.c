@@ -30,7 +30,7 @@
 #define TAILLE 250
 
 personnage perso;
-int const coefficient_de_rotation = 4;
+int const coefficient_de_rotation =8;
 double rotation=M_PI/(double)coefficient_de_rotation;
 
 double pj_x=EX, pj_y=EY, pj_z=EZ+1;
@@ -295,7 +295,19 @@ void vClavier(unsigned char key, int x, int y){
         perso->teta+=rotation;
         if(perso->teta > 2*M_PI)
             perso->teta=0;
-        glutPostRedisplay(); 
+        glutPostRedisplay();
+    }
+    if(key=='q'){
+        perso->teta-=rotation;
+        if(perso->teta > 2*M_PI)
+            perso->teta=0;
+        glutPostRedisplay();
+    }
+    if(key=='d'){
+        perso->teta+=rotation;
+        if(perso->teta > 2*M_PI)
+            perso->teta=0;
+        glutPostRedisplay();
     }
 }
 
@@ -307,6 +319,15 @@ int intersection(double x, double s, intervalle a){
 }
 
 int deplacement_possible(unsigned int dir){
+    double vx, vy; // coordonnes du vecteur
+    sens(perso, dir, &vx, &vy);
+    if(detecterCollision(labyrinthe, (perso->x + vx)*WALL_SIZE, (perso->y + vy)*WALL_SIZE, perso->teta))
+        return 1;
+    else
+        return 0;
+}
+/*
+int deplacement_possible(unsigned int dir){
     int possibilite=0; // si possible de se deplacer renvoyer 0 sinon autre chose
     double vx, vy; // coordonnes du vecteur
     sens(perso, dir, &vx, &vy);
@@ -314,21 +335,21 @@ int deplacement_possible(unsigned int dir){
     double y=vy+perso->y;
     double z=perso->z;
     int blockI=(int)x, blockJ=(int)y; // coordonnees du block cible
-    int blockZ=labyrinthe->matrice[blockI*labyrinthe->larg+blockJ];
+    int blockZ=(labyrinthe->matrice[blockI*labyrinthe->larg+blockJ]+1)%2;
     x*=WALL_SIZE;
     y*=WALL_SIZE;
     //printf("(%f,%f,%f):%f --> (%f,%f,%f):%f\n",x,y,z,PERSO_SIZE,blockI,blockJ,blockZ,WALL_SIZE);
     int intersectionX=intersection(x,PERSO_SIZE/2,Intervalle(blockI*WALL_SIZE,blockI*(1+WALL_SIZE)));
     int intersectionY=intersection(y,PERSO_SIZE/2,Intervalle(blockJ*WALL_SIZE,blockJ*(1+WALL_SIZE)));
     int intersectionZ=intersection(z,PERSO_HEIGHT,Intervalle(blockZ,WALL_HEIGHT));
-    possibilite=intersectionX && intersectionY && intersectionZ;
-    /* printf("[%d ; %d] -- [%d ; %d] -- [%d ; %d]\n",blockI*WALL_SIZE, blockI*(WALL_SIZE+1),blockJ*WALL_SIZE, blockJ*(WALL_SIZE+1),blockZ,blockZ*WALL_HEIGHT); */
+    //possibilite=intersectionX && intersectionY && intersectionZ;
+    printf("[%d ; %d] -- [%d ; %d] -- [%d ; %d]\n",blockI*WALL_SIZE, blockI*(WALL_SIZE+1),blockJ*WALL_SIZE, blockJ*(WALL_SIZE+1),blockZ,blockZ*WALL_HEIGHT);
 
-    /* printf("{%d ; %d ; %d}\n",intersectionX,intersectionY,intersectionZ); */
+    printf("{%d ; %d ; %d}\n",intersectionX,intersectionY,intersectionZ);
     //printf("PERSO : %f %f\n",perso->x, perso->y);
     
     return possibilite;
-}
+}*/
 
 void gererClavier(int key, int mouse_x, int mouse_y){
     fprintf(DEV_NULL,"%d,%d\n",mouse_x, mouse_y);
@@ -409,29 +430,51 @@ void gererClavier(int key, int mouse_x, int mouse_y){
     /* default: */
     /*     ; */
     /* } */
-    glutPostRedisplay(); 
-}  
+    glutPostRedisplay();
+} 
 
 void affichage(){
-    double vx=perso->x*WALL_SIZE, vy=perso->y*WALL_SIZE, vz=0;
+    //double vx=perso->x*WALL_SIZE, vy=perso->y*WALL_SIZE, vz=0;    
+    double x,y, a, b;
     /* printf("(%f,%f,%f) - (%d,%d)\n",vx,vy,vz,dx,dy); */
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    glFrustum(WIN_LEFT,WIN_RIGHT,WIN_TOP,WIN_BOTTOM,1,1000);
-    gluLookAt(vx,vz+2*WALL_HEIGHT,vy,vx,vz,vy,0,0,1);
+    glMatrixMode(GL_PROJECTION);
+
+    glFrustum(T,-T,-T,T,T,200);
+    
+    x=perso->x*WALL_SIZE;
+    y=perso->y*WALL_SIZE;
+    a=-PERSO_SIZE*cos(perso->teta+PI2);
+    b=PERSO_SIZE*sin(perso->teta+PI2)/2-1;
+    gluLookAt(x-a, perso->z, y-b,
+              x+a, perso->z, y+b,
+              0,1,0);
+    printf("(%f 2 %f)\n",x,y);
+    //glPushMatrix();
+    
+    //glLoadIdentity();
+    //glMatrixMode(GL_PROJECTION);
+    //gluPerspective((perso->teta/((double)2*M_PI)),1, 1, 200);
+
+    glGetError();
+    /* printf("[%f %d %f] >>> [%f %d %f]\n",perso->x*WALL_SIZE, 0, perso->y*WALL_SIZE, x,0,y); */
     glPushMatrix();
-    pnj();
+
+    
+    /* pnj(); */
     labyrinthe2d(labyrinthe, 0, 0, 0);
     repere();
     sol();
+    longcube(-1,-1,-1,2,2);
+    
     iteration++;
     glutSwapBuffers();
 }
 
 void print(int i){
     long int temps=time(NULL);
-    fprintf(stderr,"Signal SIGSEGV reçu à [%ld]\n",temps);
+    fprintf(stderr,"Signal reçu à [%ld]\n",temps);
     fprintf(stderr,"Il y a eu %d itérations\n",iteration);
 
     long page_size = sysconf(_SC_PAGESIZE); // Get the page size of the system
@@ -440,7 +483,22 @@ void print(int i){
     long used_mem = usage.ru_idrss * page_size; // Memory used by program
 
     fprintf(stderr,"On utilise %ld mémoire\n",used_mem);
+
+    freePersonnage(perso);
     
+}
+
+void drag(int mx, int my){
+    int x=mx-WIN_SIZE/2;
+    perso->teta+= (x >= 0) ? -rotation : rotation;
+    if(perso->teta > 2*M_PI || perso->teta < -2*M_PI)
+        perso->teta=0;
+    glutPostRedisplay();
+}
+
+void idle(){
+    msleep(500);
+    glutPostRedisplay();
 }
 
 int main(int argc, char **argv){
@@ -450,21 +508,24 @@ int main(int argc, char **argv){
 
     struct sigaction action;
     action.sa_handler=print;
-    
+     
     sigaction(SIGSEGV, &action, NULL);
+    sigaction(SIGQUIT, &action, NULL);
     printf("pid : %d\n",getpid());
     
-    perso=Personnage(EX+0.5,EY+0.5,EZ);
+    perso=Personnage(EX+0.5,EY+0.5,PERSO_HEIGHT);
     perso=changerVecteur(Vecteur(0.1,0.1,0.1),perso);
     srand(getpid());
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_DEPTH);
     glutInitWindowSize(WIN_SIZE,WIN_SIZE);
     glutInitWindowPosition(50, 50);
-    glutCreateWindow("Projet V0");
+    glutCreateWindow("Projet V1");
     glEnable(GL_DEPTH_TEST);
     glutDisplayFunc(affichage);
+    /* glutIdleFunc(idle); */
     glutSpecialFunc(gererClavier);
+    glutMotionFunc(drag);
     glutKeyboardFunc(vClavier);
     glutMainLoop();
     exit(EXIT_SUCCESS);

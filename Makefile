@@ -16,5 +16,8 @@ all : $(EXE)
 $(EXE) : $(EXE).c $(inc_obj) $(inc_objf) $(header)
 	$(CC) $(CFLAGS) $(EXE).c $(inc_obj) $(inc_objf) -o $(EXE) $(GLUT) $(MATH)
 
+run : $(EXE)
+	./$(EXE)
+
 clean :
 	rm -f $(EXE) $(inc_obj)

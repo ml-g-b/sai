@@ -1,15 +1,32 @@
+#include<math.h>
 #include"collision.h"
+#include"../header/window.h"
+#include"../MACRO_function.h"
 
-int est_dans_l_intervalle(double x, double i1, double i2){
-    return x>= i1 && x<= i2;
-}
+int detecterCollision(Tlaby *t, double player_x, double player_y, double teta) {
+    int h = t->haut;
+    int w = t->larg;
+    int wall = PLEIN;
+    double wallSize = WALL_SIZE;
 
-/* int intersectionPave(double ox1, double oy1, double oz1, double ox2, double oy2, double oz2, double px1, double py1, double pz1, double px2, double py2, double pz2){ */
-/*     if(isk() */
-/* } */
+    // Conversion des coordonnées en indices de la matrice
+    int x = (int) ((player_x + cos(teta + M_PI/4))/ wallSize);
+    int y = (int) ((player_y + sin(teta + M_PI/4)) / wallSize);
 
 
-// Un pan du mur est modélisé par mx my et mz de base carré size x size 
-int intersectionMurPersonnage(double mx, double my, double mz, double size, double px, double py, double pz, double psize){
-    return (est_dans_l_intervalle(px,mx,mx+size)) && (est_dans_l_intervalle(py,my,my+size)) && (est_dans_l_intervalle(pz,0,mz));
+    // Vérification des positions adjacentes
+    if (x < 0 || x >= h || y < 0 || y >= w) {
+        // Le personnage est en dehors des limites du labyrinthe
+        return 1; // Collision détectée
+    }
+
+    int player_pos = x*w + y;
+    printf("Valeur x = %d et y = %d || Indice %d valeur = %d\n", x, y, player_pos, t->matrice[player_pos]);
+    if (t->matrice[player_pos] == wall) {
+        // Le personnage est sur un mur
+        return 1; // Collision détectée
+    }
+
+    // Pas de collision détectée
+    return 0;
 }

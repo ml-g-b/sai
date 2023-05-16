@@ -12,7 +12,7 @@
 
 // Mur du labyrinthe
 
-#define WALL_HEIGHT 10
+#define WALL_HEIGHT 50
 #define WALL_SIZE 25
 #define WIDTH 10
 #define HEIGHT 10
@@ -31,8 +31,8 @@
 
 // Taille plan projection
 
-#define T 10
-#define WIN_LEFT T
+#define T 5
+#define WIN_LEFT -T
 #define WIN_RIGHT -T
 #define WIN_TOP -T
 #define WIN_BOTTOM T
@@ -40,8 +40,13 @@
 // Taille Personnage
 
 #define PERSO_SIZE 10
-#define PERSO_HEIGHT 0
+#define PERSO_HEIGHT 10
 #define DISTANCE 10
 
 #define GLUT_KEY_SPACE 32
 #define DEV_NULL fopen("/dev/null", "w")
+
+// Mathémagiques
+
+#define PI2 M_PI/(double)2
+#define RAYON 5
