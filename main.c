@@ -298,13 +298,13 @@ void vClavier(unsigned char key, int x, int y){
         glutPostRedisplay();
     }
     if(key=='q'){
-        perso->teta-=rotation;
+        perso->teta+=rotation;
         if(perso->teta > 2*M_PI)
             perso->teta=0;
         glutPostRedisplay();
     }
     if(key=='d'){
-        perso->teta+=rotation;
+        perso->teta-=rotation;
         if(perso->teta > 2*M_PI)
             perso->teta=0;
         glutPostRedisplay();
