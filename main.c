@@ -12,22 +12,18 @@
 #include<time.h>
 #include<errno.h>
 #include<threads.h>
+#include<string.h>
 #include<signal.h>
 #include<sys/resource.h>
 
-#include"GL/gl.h"
-#include"GL/glut.h"
+#include<GL/gl.h>
+#include<GL/glut.h>
 
 #include"MACRO_function.h"
 #include"include/laby.h"
 #include"header/window.h"
 #include"include/geometry.h"
 #include"include/collision.h"
-
-
-#define WIN_SIZE 800
-#define DEMITAILLE 0.5
-#define TAILLE 250
 
 personnage perso;
 int const coefficient_de_rotation=8;
@@ -131,7 +127,7 @@ void longcube(double a, double c, double b, double s, double height){
 
 
 void repere(){
-    double x=10000;
+    double x=1000;
     glBegin(GL_LINES); // Axe des x : rouge
     colorGlut(1,0,0);
     glVertex3f(-x,0,0);
@@ -311,13 +307,6 @@ void vClavier(unsigned char key, int x, int y){
     }
 }
 
-int intersection(double x, double s, intervalle a){
-    int bool=estDans(x-s,a) || estDans(x+s,a);
-    free(a);
-    /* printf("%d -- %f %f\n,",bool,x,s); */
-    return bool;
-}
-
 int deplacement_possible(unsigned int dir){
     double vx, vy; // coordonnes du vecteur
     sens(perso, dir, &vx, &vy);
@@ -475,13 +464,13 @@ void affichage(){
 void print(int i){
     long int temps=time(NULL);
     fprintf(stderr,"Signal reçu à [%ld]\n",temps);
-    fprintf(stderr,"Il y a eu %d itérations\n",iteration);
 
     long page_size = sysconf(_SC_PAGESIZE); // Get the page size of the system
     struct rusage usage;
     getrusage(RUSAGE_SELF, &usage); // Get the resource usage of the program
     long used_mem = usage.ru_idrss * page_size; // Memory used by program
 
+    fprintf(stderr,"Taille de page <%ld>, ressource usage <%ld>\n",page_size,usage.ru_idrss);
     fprintf(stderr,"On utilise %ld mémoire\n",used_mem);
 
     freePersonnage(perso);
@@ -501,32 +490,74 @@ void idle(){
     glutPostRedisplay();
 }
 
+void closed(){
+    fprintf(stderr,"EXIT PROGRAM\n");
+    freePersonnage(perso);
+}
+
 int main(int argc, char **argv){
-    FILE *f=fopen("ex_labys/laby1.txt","r");
+    int opt, opt_count=0;
+    FILE *f;
+    char *file;
+    int foption=0;
+    int show=0;
+    int i;
+    while((opt=getopt(argc,argv,"df:n")) != -1){
+        switch(opt){
+        case 'd' :
+            struct sigaction action;
+            action.sa_handler=print;
+            sigaction(SIGSEGV, &action, NULL);
+            sigaction(SIGQUIT, &action, NULL);
+            printf("pid : %d\n",getpid());
+
+            opt_count++;
+            break;
+        case 'n':
+            show=1;
+            opt_count++;
+            break;
+        case 'f':
+            fprintf(stderr,"%s\n",optarg);
+            file=(char *)malloc((strlen(optarg)+1)*sizeof(char));
+            for(i=0 ; i<strlen(optarg)+1 ; i++)
+                file[i]=optarg[i];
+            strcpy(file,optarg);
+            foption++;
+            opt_count++;
+            break;
+        case '?':
+            fprintf(stderr,"BAD OPTION %c\n", opt);
+        }
+    }
+    if(foption==0){
+        file=(char *)malloc((strlen(DEFAULT_FILE)+1)*sizeof(char));
+        for(i=0 ; i<strlen(DEFAULT_FILE)+1 ; i++)
+            file[i]=DEFAULT_FILE[i];
+    }
+    
+    f=fopen(file,"r");
     labyrinthe=lecture_laby(f);
     fclose(f);
-
-    struct sigaction action;
-    action.sa_handler=print;
-     
-    sigaction(SIGSEGV, &action, NULL);
-    sigaction(SIGQUIT, &action, NULL);
-    printf("pid : %d\n",getpid());
+    free(file);
     
-    perso=Personnage(EX+0.5,EY+0.5,PERSO_HEIGHT);
-    perso=changerVecteur(Vecteur(0.1,0.1,0.1),perso);
-    srand(getpid());
-    glutInit(&argc, argv);
-    glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_DEPTH);
-    glutInitWindowSize(WIN_SIZE,WIN_SIZE);
-    glutInitWindowPosition(50, 50);
-    glutCreateWindow("Projet V1");
-    glEnable(GL_DEPTH_TEST);
-    glutDisplayFunc(affichage);
-    /* glutIdleFunc(idle); */
-    glutSpecialFunc(gererClavier);
-    glutMotionFunc(drag);
-    glutKeyboardFunc(vClavier);
-    glutMainLoop();
+    if(show==0){
+        perso=Personnage(EX+0.5,EY+0.5,PERSO_HEIGHT);
+        perso=changerVecteur(Vecteur(0.1,0.1,0.1),perso);
+        srand(getpid());
+        glutInit(&argc, argv);
+        glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_DEPTH);
+        glutInitWindowSize(WIN_SIZE,WIN_SIZE);
+        glutInitWindowPosition(50, 50);
+        glutCreateWindow("Projet V2");
+        glEnable(GL_DEPTH_TEST);
+        glutDisplayFunc(affichage);
+        /* glutIdleFunc(idle); */
+        glutSpecialFunc(gererClavier);
+        glutMotionFunc(drag);
+        glutKeyboardFunc(vClavier);
+        glutCloseFunc(closed);
+        glutMainLoop();
+    }
     exit(EXIT_SUCCESS);
 } 

@@ -50,3 +50,13 @@
 
 #define PI2 M_PI/(double)2
 #define RAYON 5
+
+// Labyrinthe
+
+#define DEFAULT_FILE "ex_labys/laby1.txt"
+
+// Fenêtre
+
+#define WIN_SIZE 1000
+#define DEMITAILLE 0.5
+#define TAILLE 250
