@@ -30,7 +30,7 @@
 #define TAILLE 250
 
 personnage perso;
-int const coefficient_de_rotation=200;
+int const coefficient_de_rotation=8;
 double rotation=M_PI/(double)coefficient_de_rotation;
 
 double pj_x=EX, pj_y=EY, pj_z=EZ+1;
@@ -502,7 +502,7 @@ void idle(){
 }
 
 int main(int argc, char **argv){
-    FILE *f=fopen("ex_labys/laby_gros_1.txt","r");
+    FILE *f=fopen("ex_labys/laby1.txt","r");
     labyrinthe=lecture_laby(f);
     fclose(f);
 
