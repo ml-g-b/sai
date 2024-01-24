@@ -264,17 +264,17 @@ void losange(double centreX, double centreY, double rayon, double angle){
     for(i=0 ; i<4 ; i++){
         x=centreX+rayon*cos(angle+delta+i*rotation);
         y=centreY+rayon*sin(angle+delta+i*rotation);
-        glVertex3f(x,0,y);
+        glVertex3f(x,1,y);
     }
     glEnd();
     
     x=centreX+DISTANCE*cos(angle+rotation);
     y=centreY+DISTANCE*sin(angle+rotation);
     glLineWidth(2);
-    COLOR_BLACK;
+    COLOR_RED;
     glBegin(GL_LINES);
-    glVertex3f(centreX,0,centreY);
-    glVertex3f(x,0,y);
+    glVertex3f(centreX,1,centreY);
+    glVertex3f(x,1,y);
     glEnd();
 }
 
@@ -430,18 +430,21 @@ void affichage(){
     glLoadIdentity();
     glMatrixMode(GL_PROJECTION);
 
-    glFrustum(T,-T,-T,T,T,200);
+    glFrustum(T,-T,-T,T,10,200);
     
     x=perso->x*WALL_SIZE;
     y=perso->y*WALL_SIZE;
-    a=PERSO_SIZE*cos(perso->teta+PI2)-1;
-    b=PERSO_SIZE*sin(perso->teta+PI2)/2-1;
-    gluLookAt(x-a, perso->z, y-b,
+    a=PERSO_SIZE*cos(perso->teta+PI2);
+    b=PERSO_SIZE*sin(perso->teta+PI2);
+/*     gluLookAt(x-a, perso->z, y-b,
               x+a, perso->z, y+b,
-              0,1,0);
+              0,1,0); */
+    gluLookAt(x, perso->z+HEIGHT*6, y-WALL_SIZE,
+              x, perso->z, y,
+              0,0,1);
     printf("(%f 2 %f)\n",x,y);
     //glPushMatrix();
-    
+    pnj();
     //glLoadIdentity();
     //glMatrixMode(GL_PROJECTION);
     //gluPerspective((perso->teta/((double)2*M_PI)),1, 1, 200);
@@ -451,7 +454,8 @@ void affichage(){
     glPushMatrix();
 
     
-    /* pnj(); */
+/*     pnj();
+ */    
     labyrinthe2d(labyrinthe, 0, 0, 0);
     repere();
     sol();

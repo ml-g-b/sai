@@ -14,14 +14,8 @@
     <link rel="stylesheet" href="../css/sgdf.css">
     <link rel="stylesheet" href="../css/icon.css">
     <link rel="stylesheet" href="../css/font.css">
+    <link rel="stylesheet" href="../css/carousel.css">
     <link rel="icon" href="../mlgbn2_comp.png" type="image/x-icon">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/splidejs/4.1.4/css/splide-core.min.css" integrity="sha512-cSogJ0h5p3lhb//GYQRKsQAiwRku2tKOw/Rgvba47vg0+iOFrQ94iQbmAvRPF5+qkF8+gT7XBct233jFg1cBaQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <style>
-      .splide__slide img {
-        width: 500px;
-        height: auto;
-      }
-    </style>
   </head>
   <body>
     <!--<div class="building"><h1>Site in building</h1></div>-->
@@ -52,32 +46,6 @@
   </footer>
   </body>
   <script src="../script/responsive.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@splidejs/splide@4.1.4/dist/js/splide.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@splidejs/splide-extension-auto-scroll@0.5.3/dist/js/splide-extension-auto-scroll.min.js"></script>
-  <script>
-    function carouselInit(){
-    const carousel=document.querySelector("carousel")
-    const imgs=carousel.querySelectorAll("img")
-    const emplacement=document.querySelector(".illustrations")
-    const div=document.createElement("div")
-    const ul=document.createElement("ul")
-    div.classList.add("splide__track")
-    emplacement.id="image-carousel"
-    emplacement.classList.add("splide")
-    ul.classList.add("splide__list")
-    for(var i=0 ; i<imgs.length ; i++){
-        const li=document.createElement("li")
-        li.appendChild(imgs[i])
-        li.classList.add("splide__slide")
-        ul.appendChild(li)
-    }
-    carousel.remove()
-    div.appendChild(ul)
-    emplacement.appendChild(div)
-}
-
-carouselInit()
-    new Splide( '#image-carousel').mount();
-  </script>
+  <script src="../script/carousel.js"></script>
 </html>
   
